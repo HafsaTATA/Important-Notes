@@ -1,0 +1,109 @@
+1) create the AMI role:
+IAM=>ROLES=> CREER UN ROLE=> SERVICES AWS=> EC2=> EC2
+autorisations: AmazonEC2ContainerRegistryReadOnly : Ensures the instance can pull images from ECR. Provides read-only access to ECR repositories.
+AmazonEC2ContainerRegistryPowerUser:Provides full access to ECR for authenticated users, including pull, push, and other operations.
+name the role :EC2_ECR_Access_Role
+
+2) create a security group: just used an exiting one with ssh,http and https
+(discuss teh ports choice, and in run command i must configure the host port as 80 and 443:
+=> docker run --name mykeycloak -p 80:8080 -p 443:8443 \
+    -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=change_me \
+    your-repo-uri/mykeycloak:latest
+
+3) Launch an EC2 Instance:
+name
+ubuntu
+t2.small
+vpc network same as backend vpc :  Ensure that your Keycloak instance is running within the same Virtual Private Cloud (VPC) as your backend application. This setup ensures that both instances can communicate over the internal network without needing to traverse the public internet.
+subnet:same subnet for both your Keycloak instance and backend application.//If you have multiple subnets, select one that is associated with the VPC you are using.
+Auto-assign Public IP: Enable this option to ensure the instance gets a public IP address.
+volume: 30 (free)+ gpi+ chiffre: Keycloak manages user authentication, which involves handling sensitive information like user credentials, tokens, and possibly personal data. Encrypting the volume helps protect this data at rest.
+
+4) Connect to Your EC2 Instance ussing SSH:
+SSH Access: Allows you to securely manage and configure your EC2 instance.
+
+!! SSH requires that your private key files are not accessible by anyone other than the owner. If the private key file has permissions that allow access to other users, SSH will refuse to use the key for security reasons.
+so i had to :
+	1- search for "PowerShell" in the Start menu, right-click it, and select "Run as Administrator"
+	2- cd "D:\Documents\info 2 INTERNSHIPS\GeberLabs\SSH KEYS_keycloak"
+	3- 
+$acl = Get-Acl keycloak_prv_key.pem
+$acl.SetAccessRuleProtection($true, $false)
+$acl.Access | ForEach-Object { $acl.RemoveAccessRule($_) }
+$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("hafsa\hp", "FullControl", "Allow")
+$acl.AddAccessRule($rule)
+Set-Acl keycloak_prv_key.pem $acl
+
+wuhu conenction works using: ssh -i keycloak_prv_key.pem ubuntu@<DNS IPV4 PUBLIC>
+
+5)Ensure your EC2 instance has Docker installed:
+
+sudo apt-get update
+sudo apt-get install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo docker --version
+
+=>Summary
+    Update Package Index: Ensures you have the latest information about available packages.
+    Install Docker: Installs Docker from the Ubuntu repositories.
+    Start and Enable Docker: Starts Docker immediately and enables it to start on boot.
+    Verify Installation: Confirms that Docker is installed correctly.
+
+6) create the dockerfile.
+
+7) building the docker image : my image name will be "mykeycloak":
+-start docker desktop
+-tap command in the cms folder path: docker build -t mykeycloak -f Dockerfile.keycloak .
+-always in cms folder path:
+	Log in to AWS ECR: 
+aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin account_ID.dkr.ecr.UR_REGION.amazonaws.com
+	Tag docker image:
+docker tag mykeycloak:latest account_ID.dkr.ecr.UR_REGION.amazonaws.com/ECR_REPO_NAME:latest
+	push docker image to ECR: islam-center-front
+docker push 687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
+- On Your Ubuntu EC2 Instance: cad after connecting to ur ec2 instnace using this command in ur secret ssh key .pem folder=> ssh -i keycloak_prv_key.pem ubuntu@your_ipv4_dns_public
+---------------------------------------------------------------------------------
+!! FOR THE NEXT STEPS MAKE SURE TO HAVE AWS CLI installed on your EC2 instance: |
+=> Update the package index: sudo apt-get update				|_______________________________________
+=>Install AWS CLI:sudo apt-get install -y awscli									|
+if that way doesn; work u can install AWS CLI directly from the official sources					|
+=> Download the AWS CLI Installer: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"	|
+=>Unzip the Installer:sudo apt-get install unzip									|
+unzip awscliv2.zip													|
+=>Run the Installer:sudo ./aws/install											|
+-------------------------------------------------------------------------------------------------------------------------
+	login to aws ecr:
+aws ecr get-login-password --region us-east-2 | sudo docker login --username AWS --password-stdin 687456531778.dkr.ecr.us-east-2.amazonaws.com
+-------------------------------------------------------------------------------------------
+!!if u havent' configured ur aws account previously u will be asked to configure it first:|
+=>aws configure										  |
+=>hcekc screenshot									  |
+-------------------------------------------------------------------------------------------
+	Pull Docker Image:
+sudo docker pull 687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
+	Run Docker Container:
+sudo docker run -d --name mykeycloak -p 80:8080 -p 443:8443 \
+    -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=change_me \
+    687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
+// the ports choice cuz my security group is already configured to allow traffic on these ports. This means your EC2 instance will accept incoming connections on these ports, which is necessary for users to access Keycloak via their web browser.Yes, other ports can be used, but you need to ensure that the security group associated with your EC2 instance allows inbound traffic on those ports.
+------------------------------------------------------------------------------------------------------------------
+		CONGRAAAAAAAAAAAAAAATS!!!!!
+
+1) Can Anyone Access Keycloak Using the URL https://3.15.155.101?
+=>By default, anyone with the URL https://3.15.155.101 can attempt to access the Keycloak admin console, as it is exposed to the internet.
+
+2)Will the Docker Container Stop Running After Logging Out of the Instance?
+
+=>No, logging out of your SSH session on the EC2 instance does not stop running Docker containers. Here’s a bit more detail:
+
+    Docker Daemon: The Docker daemon runs in the background as a service on the EC2 instance. It manages the lifecycle of Docker containers independently of your SSH session.
+    Running Containers: Once a container is started, it continues to run even if you log out of your SSH session. The container will only stop if you explicitly stop it or if the Docker daemon itself is stopped or the EC2 instance is terminated or restarted.
+
+=>if stopped u simply start it using the exact same prev command
+=> OR : Set the Container to Restart Automatically:
+Use the --restart unless-stopped option with the docker run command to ensure the container restarts automatically:
+	sudo docker run -d --name mykeycloak -p 80:8080 -p 443:8443 \
+    -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=change_me \
+    --restart unless-stopped \
+    687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
