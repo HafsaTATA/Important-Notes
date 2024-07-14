@@ -1,0 +1,75 @@
+I have generated my ssl certifcates in the ec2 instance
+Mount Certificate Files into Containers, for keyclokc to use then in order to secure the https connection.
+-----------------------------------------------------------------------------------
+
+    sudo docker run -d --name mynewkeycloak \:
+        docker run: Command to run a new container.
+        -d: Run the container in detached mode (in the background).
+        --name mynewkeycloak: Name the container mynewkeycloak.
+
+    Port Mappings:
+        -p 80:8080: Map port 80 on the host to port 8080 in the container.
+        -p 443:8443: Map port 443 on the host to port 8443 in the container.
+
+    Volume Mounts:
+        -v /etc/letsencrypt/live/auth.geberlabs.com/fullchain.pem:/opt/keycloak/certs/fullchain.pem:ro: Mount the SSL certificate from the host to the container.
+        -v /etc/letsencrypt/live/auth.geberlabs.com/privkey.pem:/opt/keycloak/certs/privkey.pem:ro: Mount the SSL private key from the host to the container.
+
+    Environment Variables:
+        -e KEYCLOAK_ADMIN=admin: Set the Keycloak admin username to admin.
+        -e KEYCLOAK_ADMIN_PASSWORD=change_me: Set the Keycloak admin password to change_me.
+        -e KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/fullchain.pem: Tell Keycloak where to find the SSL certificate.
+        -e KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/certs/privkey.pem: Tell Keycloak where to find the SSL private key.
+
+    Entrypoint and Command:
+        --entrypoint /opt/keycloak/bin/kc.sh: Override the default entrypoint to run the kc.sh script.
+        687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest: Specify the Docker image to use.
+        start-dev --proxy-headers=xforwarded: Command to run inside the container, starting Keycloak in development mode with the xforwarded headers configuration.
+----------------------------------------------------------------------------
+RIGHT ONE :
+sudo docker run -d --name mynewkeycloak \
+    -p 80:8080 -p 443:8443 \
+    -v /etc/letsencrypt/live/auth.geberlabs.com/fullchain.pem:/opt/keycloak/certs/fullchain.pem:ro \
+    -v /etc/letsencrypt/live/auth.geberlabs.com/privkey.pem:/opt/keycloak/certs/privkey.pem:ro \
+    -e KEYCLOAK_ADMIN=admin \
+    -e KEYCLOAK_ADMIN_PASSWORD=098123 \
+    -e KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/fullchain.pem \
+    -e KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/certs/privkey.pem \
+    687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
+---------------------------------------------------------------
+sudo docker run -d --name mynewkeycloak \
+    -p 80:8080 -p 443:8443 \
+    -v /etc/letsencrypt/live/auth.geberlabs.com/fullchain.pem:/opt/keycloak/certs/fullchain.pem:ro \
+    -v /etc/letsencrypt/live/auth.geberlabs.com/privkey.pem:/opt/keycloak/certs/privkey.pem:ro \
+    -e KEYCLOAK_ADMIN=admin \
+    -e KEYCLOAK_ADMIN_PASSWORD=change_me \
+    -e KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/fullchain.pem \
+    -e KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/certs/privkey.pem \
+    -e KC_HTTPS_TRUST_STORE_FILE=/opt/keycloak/certs/fullchain.pem \
+    -e KC_HTTPS_TRUST_STORE_PASSWORD=change_me \
+    -e KC_HTTPS_KEY_STORE_FILE=/opt/keycloak/certs/privkey.pem \
+    -e KC_HTTPS_KEY_STORE_PASSWORD=change_me \
+    -e KC_HOSTNAME_URL=https://auth.geberlabs.com \
+    687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
+
+-----------------------------------------------------------
+To ensure that Keycloak uses the SSL certificates for HTTPS, you need to set these environment variables correctly.
+----------------------------------------------------------------------
+that your private key is not an RSA key, but an EC (Elliptic Curve) key. The Keycloak image you are using might not support EC keys directly
+-----------------------------------------------------------------------------------------
+Mr Adil, please i have a question...why do i need to find the full Keycloak directory structure inside EC2 instance??? Keycloak is installed inside the Docker container not directly on the EC2 instance.
+and keycloak i see is in the Docker container, which is created by the Docker image for running Keycloak services. 
+----------------------------------------------------------------------------------------
+EC2 Instance: This is your virtual machine running on AWS. It hosts the Docker runtime which allows you to run containers.
+Docker: This is the containerization platform installed on your EC2 instance. It enables you to run applications in isolated environments called containers.
+Keycloak Docker Container: This is the container running on your EC2 instance. It contains Keycloak and its dependencies, isolated from the rest of the EC2 instance.
+-------------------------------------------------------------------------------------------------------------------
+You are correct that if you map the container's ports 8080 and 8443 to the EC2 instance's ports 80 and 443, then you should only need to allow traffic on ports 80 and 443 in your EC2 security group.
+
+Your Docker container is configured to forward traffic from the host's ports to the container's ports. Here's what happens:
+
+    Traffic coming to the EC2 instance on port 80 is forwarded to the container's port 8080.
+    Traffic coming to the EC2 instance on port 443 is forwarded to the container's port 8443.
+
+Given this setup, the security group should indeed only need to allow inbound traffic on ports 80 and 443.
+--------------------------------------------------------------------------

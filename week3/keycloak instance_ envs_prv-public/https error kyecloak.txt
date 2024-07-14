@@ -1,0 +1,92 @@
+ubuntu@ip-172-31-24-13:~$ sudo docker logs mykeycloak
+Updating the configuration and installing your custom providers, if any. Please wait.
+2024-07-09 20:07:51,707 INFO  [io.qua.dep.QuarkusAugmentor] (main) Quarkus augmentation completed in 22561ms
+2024-07-09 20:08:03,910 INFO  [org.infinispan.CONTAINER] (Thread-5) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2024-07-09 20:08:05,955 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2024-07-09 20:08:06,011 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_157425, Site name: null
+2024-07-09 20:08:08,925 INFO  [org.keycloak.quarkus.runtime.storage.legacy.liquibase.QuarkusJpaUpdaterProvider] (main) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+
+UPDATE SUMMARY
+Run:                        133
+Previously run:               0
+Filtered out:                 0
+-------------------------------
+Total change sets:          133
+
+2024-07-09 20:08:17,824 INFO  [org.keycloak.services] (main) KC-SERVICES0050: Initializing master realm
+2024-07-09 20:08:23,328 INFO  [org.keycloak.services] (main) KC-SERVICES0009: Added user 'admin' to realm 'master'
+2024-07-09 20:08:23,542 INFO  [io.quarkus] (main) Keycloak 25.0.1 on JVM (powered by Quarkus 3.8.5) started in 31.248s. Listening on: http://0.0.0.0:8080. Management interface listening on http://0.0.0.0:9000.
+2024-07-09 20:08:23,544 INFO  [io.quarkus] (main) Profile dev activated.
+2024-07-09 20:08:23,545 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, keycloak, logging-gelf, narayana-jta, reactive-routes, resteasy-reactive, resteasy-reactive-jackson, smallrye-context-propagation, vertx]
+2024-07-09 20:08:23,556 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.
+2024-07-09 21:11:27,855 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.NullPointerException: Cannot invoke "Object.toString()" because the return value of "io.vertx.core.http.HttpServerRequest.authority()" is null
+        at org.jboss.resteasy.reactive.server.vertx.VertxResteasyReactiveRequestContext.getRequestHost(VertxResteasyReactiveRequestContext.java:194)
+        at org.jboss.resteasy.reactive.server.core.ResteasyReactiveRequestContext.getAuthority(ResteasyReactiveRequestContext.java:481)
+        at org.jboss.resteasy.reactive.server.jaxrs.UriInfoImpl.getBaseUri(UriInfoImpl.java:131)
+        at org.jboss.resteasy.reactive.server.jaxrs.UriInfoImpl.getBaseUriBuilder(UriInfoImpl.java:141)
+        at org.keycloak.url.HostnameV2Provider.getFrontUriBuilder(HostnameV2Provider.java:99)
+        at org.keycloak.url.HostnameV2Provider.getUri(HostnameV2Provider.java:73)
+        at org.keycloak.url.HostnameV2Provider.getScheme(HostnameV2Provider.java:134)
+        at org.keycloak.models.KeycloakUriInfo.<init>(KeycloakUriInfo.java:51)
+        at org.keycloak.services.DefaultKeycloakContext.getUri(DefaultKeycloakContext.java:78)
+        at org.keycloak.services.DefaultKeycloakContext.getUri(DefaultKeycloakContext.java:85)
+        at org.keycloak.services.resources.WelcomeResource.getWelcomePage(WelcomeResource.java:91)
+        at org.keycloak.services.resources.WelcomeResource$quarkusrestinvoker$getWelcomePage_3d46f4348f9016709ff9c5ca428ac29847ab83d6.invoke(Unknown Source)
+        at org.jboss.resteasy.reactive.server.handlers.InvocationHandler.handle(InvocationHandler.java:29)
+        at io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:141)
+        at org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:147)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:582)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+2024-07-09 21:39:05,135 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.NullPointerException: Cannot invoke "Object.toString()" because the return value of "io.vertx.core.http.HttpServerRequest.authority()" is null
+        at org.jboss.resteasy.reactive.server.vertx.VertxResteasyReactiveRequestContext.getRequestHost(VertxResteasyReactiveRequestContext.java:194)
+        at org.jboss.resteasy.reactive.server.core.ResteasyReactiveRequestContext.getAuthority(ResteasyReactiveRequestContext.java:481)
+        at org.jboss.resteasy.reactive.server.jaxrs.UriInfoImpl.getBaseUri(UriInfoImpl.java:131)
+        at org.jboss.resteasy.reactive.server.jaxrs.UriInfoImpl.getBaseUriBuilder(UriInfoImpl.java:141)
+        at org.keycloak.url.HostnameV2Provider.getFrontUriBuilder(HostnameV2Provider.java:99)
+        at org.keycloak.url.HostnameV2Provider.getUri(HostnameV2Provider.java:73)
+        at org.keycloak.url.HostnameV2Provider.getScheme(HostnameV2Provider.java:134)
+        at org.keycloak.models.KeycloakUriInfo.<init>(KeycloakUriInfo.java:51)
+        at org.keycloak.services.DefaultKeycloakContext.getUri(DefaultKeycloakContext.java:78)
+        at org.keycloak.services.DefaultKeycloakContext.getUri(DefaultKeycloakContext.java:85)
+        at org.keycloak.services.resources.WelcomeResource.getWelcomePage(WelcomeResource.java:91)
+        at org.keycloak.services.resources.WelcomeResource$quarkusrestinvoker$getWelcomePage_3d46f4348f9016709ff9c5ca428ac29847ab83d6.invoke(Unknown Source)
+        at org.jboss.resteasy.reactive.server.handlers.InvocationHandler.handle(InvocationHandler.java:29)
+        at io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:141)
+        at org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:147)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:582)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+
+2024-07-10 01:24:00,990 ERROR [org.keycloak.services.error.KeycloakErrorHandler] (executor-thread-1) Uncaught server error: java.lang.NullPointerException: Cannot invoke "Object.toString()" because the return value of "io.vertx.core.http.HttpServerRequest.authority()" is null
+        at org.jboss.resteasy.reactive.server.vertx.VertxResteasyReactiveRequestContext.getRequestHost(VertxResteasyReactiveRequestContext.java:194)
+        at org.jboss.resteasy.reactive.server.core.ResteasyReactiveRequestContext.getAuthority(ResteasyReactiveRequestContext.java:481)
+        at org.jboss.resteasy.reactive.server.jaxrs.UriInfoImpl.getBaseUri(UriInfoImpl.java:131)
+        at org.jboss.resteasy.reactive.server.jaxrs.UriInfoImpl.getBaseUriBuilder(UriInfoImpl.java:141)
+        at org.keycloak.url.HostnameV2Provider.getFrontUriBuilder(HostnameV2Provider.java:99)
+        at org.keycloak.url.HostnameV2Provider.getUri(HostnameV2Provider.java:73)
+        at org.keycloak.url.HostnameV2Provider.getScheme(HostnameV2Provider.java:134)
+        at org.keycloak.models.KeycloakUriInfo.<init>(KeycloakUriInfo.java:51)
+        at org.keycloak.services.DefaultKeycloakContext.getUri(DefaultKeycloakContext.java:78)
+        at org.keycloak.services.DefaultKeycloakContext.getUri(DefaultKeycloakContext.java:85)
+        at org.keycloak.services.resources.WelcomeResource.getWelcomePage(WelcomeResource.java:91)
+        at org.keycloak.services.resources.WelcomeResource$quarkusrestinvoker$getWelcomePage_3d46f4348f9016709ff9c5ca428ac29847ab83d6.invoke(Unknown Source)
+        at org.jboss.resteasy.reactive.server.handlers.InvocationHandler.handle(InvocationHandler.java:29)
+        at io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:141)
+        at org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:147)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:582)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:1583)

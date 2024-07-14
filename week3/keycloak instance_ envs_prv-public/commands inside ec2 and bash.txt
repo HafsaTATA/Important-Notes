@@ -1,0 +1,32 @@
+//inside ec2:
+ls -l /opt/keycloak
+
+//run :
+don't use root user:     --user keycloak \
+
+sudo docker run -d --name mynewkeycloak \
+    -p 80:8080 -p 443:8443 \
+    -v /etc/letsencrypt/live/auth.geberlabs.com/fullchain.pem:/opt/keycloak/certs/fullchain.pem:ro \
+    -v /etc/letsencrypt/live/auth.geberlabs.com/privkey.pem:/opt/keycloak/certs/privkey.pem:ro \
+    -e KEYCLOAK_ADMIN=admin \
+    -e KEYCLOAK_ADMIN_PASSWORD=098123 \
+    -e KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/certs/fullchain.pem \
+    -e KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/certs/privkey.pem \
+    -e KC_HOSTNAME=auth.geberlabs.com \
+    -e KC_HOSTNAME_URL=https://auth.geberlabs.com \
+    687456531778.dkr.ecr.us-east-2.amazonaws.com/islam-center-front:latest
+
+
+//passage:
+sudo docker exec -it mynewkeycloak /bin/bash
+
+//inside container:
+cd /opt/keycloak
+
+// Keycloak Configuration:
+Make sure Keycloak is configured to use the correct hostname. Keycloak uses the hostname to generate URLs and validate requests:
+cat /opt/keycloak/conf/keycloak.conf
+
+//Change ownership of the certificate files:
+chown keycloak:keycloak /opt/keycloak/certs/fullchain.pem
+chown keycloak:keycloak /opt/keycloak/certs/privkey.pem
